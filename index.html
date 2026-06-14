@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>E-Portofolio PPG - Amin Dananjaya</title>
+    <meta name="description" content="E-Portofolio Pendidikan Profesi Guru (PPG) Prajabatan oleh Amin Dananjaya. Memuat artefak pembelajaran, profil, dan kompetensi pendidik.">
+    <meta name="author" content="Amin Dananjaya">
+    <meta property="og:title" content="E-Portofolio PPG - Amin Dananjaya">
+    <meta property="og:description" content="E-Portofolio Pendidikan Profesi Guru (PPG) Prajabatan oleh Amin Dananjaya.">
+    <meta property="og:image" content="assets/1.jpg">
+    <meta property="og:url" content="https://portofolio-ppg-naja.vercel.app">
+    <meta property="og:type" content="website">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/Draggable.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Space Grotesk', 'sans-serif'],
+                        inter: ['Inter', 'sans-serif']
+                    },
+                    colors: {
+                        accent: '#4ade80'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg-body: #f8fafc;
+            --grid-color: rgba(0, 0, 0, 0.05);
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --text-main: #0f172a;
+            --text-muted: #475569;
+        }
+        .dark {
+            --bg-body: #0a0a0a;
+            --grid-color: rgba(255, 255, 255, 0.04);
+            --glass-bg: rgba(25, 25, 25, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #ffffff;
+            --text-muted: #9ca3af;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            overflow-x: hidden;
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 50px 50px;
+            background-attachment: fixed;
+            scroll-behavior: smooth;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        #intro-screen {
+            position: fixed; inset: 0; background-color: #050505; z-index: 99999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.8s ease, transform 0.8s ease, visibility 0.8s ease; cursor: pointer;
+        }
+        #intro-screen.hide {
+            opacity: 0; visibility: hidden; transform: translateY(-30px) scale(0.95);
+        }
+        .intro-anim-up { opacity: 0; transform: translateY(40px); animation: fadeUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .intro-anim-scale { opacity: 0; transform: scale(0.5); animation: scaleIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleIn { to { opacity: 1; transform: scale(1); } }
+        .glass-panel {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            transition: all 0.3s ease;
+        }
+        .nav-link { transition: all 0.3s ease; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+        .dropdown-menu {
+            opacity: 0; transform: translateY(10px); pointer-events: none;
+            transition: all 0.3s ease;
+        }
+        .group:hover .dropdown-menu, .group:focus-within .dropdown-menu {
+            opacity: 1; transform: translateY(0); pointer-events: auto;
+        }
+        .icon-bounce { transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.3s; display: inline-flex; justify-content: center; align-items: center; }
+        .icon-bounce:hover { transform: scale(1.1) translateY(-3px); color: #4ade80; }
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.5, 0, 0, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        .tab-content { display: none; animation: fadeIn 0.4s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        #artefak-modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
+            z-index: 9999; display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        #artefak-modal.active { opacity: 1; pointer-events: auto; }
+        .modal-box { transform: scale(0.9); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        #artefak-modal.active .modal-box { transform: scale(1); }
+        .progress-bar-bg { background: var(--glass-border); height: 10px; border-radius: 5px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: currentColor; width: 0; transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1); }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.5); border-radius: 10px; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); }
+        .lanyard-wrapper {
+            position: relative; width: 100%; height: 600px;
+            display: flex; justify-content: center; align-items: center;
+            pointer-events: none; z-index: 10;
+        }
+        #lanyard-viewport {
+            position: relative; width: 100%; max-width: 360px; height: 540px;
+            display: flex; justify-content: center; align-items: flex-start;
+            perspective: 2500px; pointer-events: none;
+        }
+        #strap-svg-pure {
+            position: absolute; top: -300px; left: 50%; transform: translateX(-50%);
+            width: 100%; min-width: 650px; height: 900px;
+            pointer-events: none; overflow: visible; z-index: 1;
+        }
+        .strap-outer { fill: none; stroke: #111; stroke-width: 18; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 15px 15px rgba(0,0,0,0.6)); }
+        .strap-inner { fill: none; stroke: #3b82f6; stroke-width: 4; stroke-dasharray: 10 20; opacity: 0.5; stroke-linecap: round; }
+        .metal-ring { fill: url(#ring-gradient); stroke: #000; stroke-width: 1; }
+        .lanyard-text { font-size: 14px; font-weight: 800; font-family: 'Inter', sans-serif; fill: #444; letter-spacing: 0.15em; text-shadow: 0 1px 1px #000; dominant-baseline: middle; text-anchor: middle; }
+        #badge-master {
+            position: relative; width: 230px; height: 380px;
+            cursor: grab; user-select: none; transform-style: preserve-3d;
+            touch-action: none; transform-origin: top center; z-index: 20;
+            margin-top: 30px; pointer-events: auto;
+        }
+        #badge-master.dragging { cursor: grabbing; z-index: 50; }
+        .id-badge-front, .id-badge-back {
+            position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 16px;
+            backface-visibility: hidden; -webkit-backface-visibility: hidden;
+            transform-style: preserve-3d;
+            box-shadow: 0 30px 60px -10px rgba(0, 0, 0, 0.7), inset 0 1px 2px rgba(255,255,255,0.2);
+        }
+        .id-badge-front {
+            display: flex; flex-direction: column; background: #080808; border: 1px solid #333;
+            transform: rotateY(0deg) translateZ(2px); overflow: hidden;
+            background-image: radial-gradient(circle at 50% -20%, rgba(59,130,246,0.15) 0%, transparent 60%); z-index: 2;
+        }
+        .id-badge-back {
+            background: #050505; border: 1px solid #222; transform: rotateY(180deg) translateZ(2px);
+            display: flex; flex-direction: column; justify-content: flex-start; align-items: center;
+            z-index: 1; overflow: hidden;
+        }
+        .hologram-effect {
+            position: absolute; inset: 0;
+            background: linear-gradient(135deg, transparent 35%, rgba(255,255,255,0.03) 45%, rgba(59,130,246,0.1) 50%, rgba(255,255,255,0.03) 55%, transparent 65%);
+            background-size: 300% 300%; pointer-events: none; border-radius: 16px;
+            animation: holo-sweep 5s ease-in-out infinite; z-index: 10; transform: translateZ(1px);
+        }
+        @keyframes holo-sweep { 0% { background-position: 0% 0%; } 100% { background-position: 300% 300%; } }
+        .mag-stripe { width: 100%; height: 45px; background: #000; margin-top: 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.5); border-top: 1px solid #111; border-bottom: 1px solid #111; }
+        .metal-clip {
+            position: absolute; top: -25px; left: 50%; transform: translateX(-50%) translateZ(3px);
+            width: 30px; height: 45px; background: linear-gradient(90deg, #555, #999, #333);
+            border-radius: 4px; box-shadow: 0 5px 10px rgba(0,0,0,0.6); z-index: 19; border: 1px solid #222;
+        }
+        .clip-hole {
+            position: absolute; top: 8px; left: 50%; transform: translateX(-50%) translateZ(4px);
+            width: 40px; height: 10px; background: #000; border-radius: 5px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.8); z-index: 20;
+        }
+        .profile-img-frame {
+            position: relative; padding: 3px; background: linear-gradient(135deg, #3b82f6, #1d4ed8, #050505);
+            border-radius: 14px; box-shadow: 0 10px 20px rgba(0,0,0,0.6); z-index: 12; transform: translateZ(8px);
+            width: 100%;
+        }
+        .profile-img { width: 100%; height: 190px; border-radius: 11px; object-fit: cover; object-position: top center; border: 2px solid #080808; filter: contrast(1.1) saturate(1.1); }
+        .id-chip {
+            width: 32px; height: 24px; background: linear-gradient(135deg, #eab308, #a16207);
+            border-radius: 4px; border: 1px solid #713f12; position: absolute; right: 15px; top: 60px;
+            opacity: 0.9; z-index: 12; transform: translateZ(4px);
+            background-image: repeating-linear-gradient(90deg, transparent, transparent 4px, rgba(0,0,0,0.15) 4px, rgba(0,0,0,0.15) 5px), repeating-linear-gradient(0deg, transparent, transparent 8px, rgba(0,0,0,0.2) 8px, rgba(0,0,0,0.2) 9px);
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.4);
+        }
+    </style>
+</head>
+<body class="antialiased font-sans">
+    <div id="intro-screen" onclick="closeIntro()">
+        <div class="flex gap-5 mb-10 intro-anim-scale" style="animation-delay: 0.2s;">
+            <div class="w-16 h-16 rounded-full border border-white/20 flex justify-center items-center text-white text-2xl bg-white/5"><i class="fa-solid fa-graduation-cap"></i></div>
+            <div class="w-16 h-16 rounded-full border border-white/20 flex justify-center items-center text-white text-2xl bg-white/5"><i class="fa-solid fa-book-open-reader"></i></div>
+            <div class="w-16 h-16 rounded-full border border-white/20 flex justify-center items-center text-white text-2xl bg-white/5"><i class="fa-solid fa-medal"></i></div>
+        </div>
+        <h1 class="text-3xl md:text-5xl text-white font-medium mb-3 intro-anim-up" style="animation-delay: 0.5s;">Selamat Datang di</h1>
+        <h1 class="text-4xl md:text-7xl text-white font-bold mb-8 tracking-tight intro-anim-up" style="animation-delay: 0.7s;">E-Portofolio PPG</h1>
+        <div class="px-8 py-3 rounded-full border border-white/20 text-gray-300 tracking-widest text-sm font-mono intro-anim-up bg-white/5 font-bold" style="animation-delay: 0.9s;">PRAJABATAN 2026</div>
+        <p class="mt-12 text-gray-500 text-sm animate-pulse intro-anim-up font-bold tracking-widest" style="animation-delay: 1.2s;">KLIK UNTUK MELANJUTKAN</p>
+    </div>
+    <svg width="0" height="0">
+        <defs>
+            <linearGradient id="ring-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#444;stop-opacity:1" />
+                <stop offset="50%" style="stop-color:#aaa;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#222;stop-opacity:1" />
+            </linearGradient>
+            <linearGradient id="strap-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:#111;stop-opacity:1" />
+                <stop offset="50%" style="stop-color:#222;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#111;stop-opacity:1" />
+            </linearGradient>
+        </defs>
+    </svg>
+    <nav class="fixed top-0 w-full z-[100] px-6 py-4 flex justify-between items-center transition-all duration-300 bg-white/40 dark:bg-[#0a0a0a]/50 backdrop-blur-md border-b border-black/5 dark:border-white/5">
+        <div class="text-[10px] md:text-xs font-bold tracking-widest leading-tight z-50 relative pointer-events-auto uppercase drop-shadow-md">
+            <span class="lang-t" data-id="Universitas Negeri Semarang" data-en="Semarang State University" style="color: var(--text-main);">Universitas Negeri Semarang</span><br>
+            <span class="text-[9px] md:text-[10px] font-bold tracking-widest lang-t" data-id="PPG Prajabatan 2026" data-en="Pre-service Teacher 2026" style="color: var(--text-muted);">PPG PRAJABATAN 2026</span>
+        </div>
+        <div class="hidden lg:flex items-center gap-3 font-bold tracking-widest text-[10px] uppercase z-50 relative pointer-events-auto">
+            <a href="#beranda" class="nav-link px-5 py-2.5 rounded-full glass-panel shadow-sm hover:scale-105 active:scale-95 transition-all lang-t" data-id="<i class='fa-solid fa-house'></i> BERANDA" data-en="<i class='fa-solid fa-house'></i> HOME"><i class="fa-solid fa-house"></i> BERANDA</a>
+            <a href="#profile" class="nav-link px-5 py-2.5 rounded-full glass-panel shadow-sm hover:scale-105 active:scale-95 transition-all lang-t" data-id="<i class='fa-solid fa-user'></i> PROFILE" data-en="<i class='fa-solid fa-user'></i> PROFILE"><i class="fa-solid fa-user"></i> PROFILE</a>
+            <div class="relative group" tabindex="0">
+                <button class="nav-link px-5 py-2.5 rounded-full glass-panel shadow-sm hover:scale-105 active:scale-95 transition-all outline-none lang-t flex items-center gap-1.5" data-id="<i class='fa-solid fa-folder-open'></i> ARTEFAK ▾" data-en="<i class='fa-solid fa-folder-open'></i> ARTIFACTS ▾">
+                    <i class="fa-solid fa-folder-open"></i> ARTEFAK ▾
+                </button>
+                <ul class="dropdown-menu absolute left-1/2 -translate-x-1/2 mt-4 w-56 glass-panel rounded-2xl py-3 shadow-2xl bg-white/90 dark:bg-[#111]/90 border" style="border-color: var(--glass-border);">
+                    <li><a href="#artefak-pembelajaran" onclick="openArtefak('Modul Ajar', 'fa-book-open', 'text-blue-500')" class="block px-5 py-3 text-xs tracking-widest hover:bg-black/5 dark:hover:bg-white/10 transition font-bold uppercase text-blue-500"><i class="fa-solid fa-book-open w-4 text-center mr-1"></i> Modul Ajar</a></li>
+                    <li><a href="#artefak-pembelajaran" onclick="openArtefak('Media Pembelajaran', 'fa-photo-film', 'text-purple-500')" class="block px-5 py-3 text-xs tracking-widest hover:bg-black/5 dark:hover:bg-white/10 transition font-bold uppercase text-purple-500"><i class="fa-solid fa-photo-film w-4 text-center mr-1"></i> Media Pembelajaran</a></li>
+                    <li><a href="#artefak-pembelajaran" onclick="openArtefak('Siklus', 'fa-arrows-spin', 'text-blue-500')" class="block px-5 py-3 text-xs tracking-widest hover:bg-black/5 dark:hover:bg-white/10 transition font-bold uppercase text-blue-500"><i class="fa-solid fa-arrows-spin w-4 text-center mr-1"></i> Refleksi Siklus</a></li>
+                    <li><a href="#artefak-pembelajaran" onclick="openArtefak('Penilaian', 'fa-clipboard-check', 'text-red-500')" class="block px-5 py-3 text-xs tracking-widest hover:bg-black/5 dark:hover:bg-white/10 transition font-bold uppercase text-red-500"><i class="fa-solid fa-clipboard-check w-4 text-center mr-1"></i> DPL & GP</a></li>
+                    <li><a href="#artefak-pembelajaran" onclick="openArtefak('Dokumentasi', 'fa-folder-tree', 'text-gray-500 dark:text-gray-400')" class="block px-5 py-3 text-xs tracking-widest hover:bg-black/5 dark:hover:bg-white/10 transition font-bold uppercase text-gray-500 dark:text-gray-400"><i class="fa-solid fa-folder-tree w-4 text-center mr-1"></i> Dokumentasi</a></li>
+                </ul>
+            </div>
+            <a href="#kompetensi" class="nav-link px-5 py-2.5 rounded-full glass-panel shadow-sm hover:scale-105 active:scale-95 transition-all lang-t" data-id="<i class='fa-solid fa-chart-simple'></i> KOMPETENSI" data-en="<i class='fa-solid fa-chart-simple'></i> COMPETENCE"><i class="fa-solid fa-chart-simple"></i> KOMPETENSI</a>
+        </div>
+        <div class="flex items-center gap-2 z-50 relative pointer-events-auto">
+            <button onclick="toggleLanguage()" class="w-10 h-10 rounded-full flex justify-center items-center bg-transparent hover:bg-black/5 dark:hover:bg-white/10 transition text-gray-600 dark:text-gray-300 drop-shadow-md" title="Ubah Bahasa">
+                <i class="fa-solid fa-language text-lg opacity-80"></i>
+            </button>
+            <button id="theme-toggle" class="w-10 h-10 rounded-full flex justify-center items-center bg-transparent hover:bg-black/5 dark:hover:bg-white/10 transition text-gray-600 dark:text-gray-300 drop-shadow-md" title="Mode Terang/Gelap">
+                <i class="fa-solid fa-moon dark:hidden text-lg opacity-80"></i>
+                <i class="fa-solid fa-sun hidden dark:block text-yellow-400 text-lg opacity-90"></i>
+            </button>
+            <a href="#contact" class="hidden md:inline-flex px-5 py-2.5 ml-1 bg-gray-900 text-white dark:bg-white dark:text-black font-bold tracking-widest text-[10px] rounded-full hover:opacity-80 active:scale-95 transition transform hover:-translate-y-1 shadow-lg uppercase lang-t flex items-center gap-2" data-id="<i class='fa-solid fa-paper-plane'></i> HUBUNGI SAYA" data-en="<i class='fa-solid fa-paper-plane'></i> CONTACT ME">
+                <i class="fa-solid fa-paper-plane"></i> HUBUNGI SAYA
+            </a>
+        </div>
+    </nav>
+    <section id="beranda" class="min-h-screen pt-32 pb-20 px-6 lg:px-20 flex flex-col lg:flex-row items-center gap-12 relative z-30 pointer-events-none">
+        <div class="flex-1 reveal z-40 pointer-events-auto mt-10 md:mt-0">
+            <div class="inline-flex items-center gap-2 px-5 py-2 glass-panel rounded-full text-xs font-bold tracking-widest uppercase mb-8 shadow-sm lang-t" data-id="E-Portofolio PPG Prajabatan 2026" data-en="E-Portfolio Pre-service Teacher 2026" style="color: var(--text-muted);">E-Portofolio PPG Prajabatan 2026</div>
+            <h1 class="text-5xl md:text-7xl font-bold mb-4 tracking-tighter drop-shadow-md">Amin Dananjaya</h1>
+            <h2 class="text-xl md:text-2xl font-bold mb-4 tracking-widest lang-t" data-id="NIM: 2598030166" data-en="NIM: 2598030166" style="color: var(--text-muted);">NIM: 2598030166</h2>
+            <h3 class="text-lg md:text-2xl text-accent font-bold mb-8 tracking-tight lang-t" data-id="Pendidikan Jasmani, Olahraga, dan Kesehatan" data-en="Physical Education, Sports, and Health">Pendidikan Jasmani, Olahraga, dan Kesehatan</h3>
+            <div class="glass-panel p-6 rounded-2xl mb-10 border-l-4 border-l-accent inline-block">
+                <p class="text-lg leading-relaxed italic font-medium lang-t" data-id='"Kesabaran akan berbuah kesuksesan. Tetap berdoa karena Allah mendengar segalanya."' data-en='"Patience will bear success. Keep praying because Allah hears everything."' style="color: var(--text-muted);">"Kesabaran akan berbuah kesuksesan. Tetap berdoa karena Allah mendengar segalanya."</p>
+            </div>
+            <div class="flex gap-4 relative z-50 pointer-events-auto mt-2">
+                <a href="https://instagram.com/najahndyptr_" target="_blank" class="w-12 h-12 rounded-full glass-panel flex justify-center items-center text-lg icon-bounce shadow-md" style="color: var(--text-main);"><i class="fa-brands fa-instagram"></i></a>
+                <a href="mailto:amindanjaya193@gmail.com" class="w-12 h-12 rounded-full glass-panel flex justify-center items-center text-lg icon-bounce shadow-md" style="color: var(--text-main);"><i class="fa-solid fa-envelope"></i></a>
+            </div>
+        </div>
+        <div class="flex-1 w-full lanyard-wrapper z-20">
+            <div id="lanyard-viewport">
+                <svg id="strap-svg-pure" viewBox="0 0 650 800" preserveAspectRatio="xMidYMin slice">
+                    <path class="strap-outer" id="strap-p1" d="" />
+                    <path class="strap-inner" id="strap-p2" d="" />
+                    <circle class="metal-ring" id="ring-left" r="10" />
+                    <circle class="metal-ring" id="ring-right" r="10" />
+                    <text class="lanyard-text">
+                        <textPath href="#strap-p1" startOffset="50%" method="stretch">UNIVERSITAS NEGERI SEMARANG - PPG PRAJABATAN 2026</textPath>
+                    </text>
+                </svg>
+                <div id="badge-master">
+                    <div class="metal-clip"></div>
+                    <div class="clip-hole"></div>
+                    <div class="id-badge-back">
+                        <div class="mag-stripe"></div>
+                        <div class="w-full px-4 py-4 flex flex-col items-center justify-center flex-grow">
+                            <div class="bg-white w-14 h-14 rounded-xl shadow-lg mb-3 flex items-center justify-center border-4 border-gray-200">
+                                <div class="w-8 h-8 bg-black rounded-sm"></div>
+                            </div>
+                            <div class="text-[8px] text-gray-500 font-mono text-center leading-relaxed font-bold tracking-widest">IF FOUND, PLEASE RETURN TO<br><span class="text-blue-500">UNIVERSITAS MUHAMMADIYAH</span><br>SURAKARTA</div>
+                            <div class="mt-3 w-full border-t border-[#1a1a1a] pt-2 text-center text-[10px] font-extrabold text-gray-400 font-mono tracking-widest">NIM-2598030166</div>
+                        </div>
+                    </div>
+                    <div class="id-badge-front">
+                        <div class="hologram-effect"></div>
+                        <div class="id-chip"></div>
+                        <div class="w-full bg-gradient-to-r from-blue-600/20 to-transparent py-2.5 px-4 flex justify-between items-center border-b border-blue-900/40">
+                            <div class="flex items-center gap-2">
+                                <span class="text-[9px] font-bold text-gray-200 tracking-[0.2em] font-mono">PPG PRAJABATAN</span>
+                            </div>
+                            <span class="text-[8px] font-bold text-gray-500 tracking-widest">RFID</span>
+                        </div>
+                        <div class="flex flex-col p-3 w-full h-full">
+                            <div class="relative profile-img-frame mx-auto mb-2">
+                                <img id="badge-photo" src="" alt="Profile" class="profile-img">
+                                <div class="absolute bottom-2 right-2 text-[8px] font-black text-white bg-blue-600/90 backdrop-blur-md px-2 py-1 rounded shadow-lg tracking-widest border border-blue-400/50">MAHASISWA</div>
+                            </div>
+                            <h3 class="text-[18px] font-black text-white tracking-tighter uppercase leading-none font-inter drop-shadow-md text-center mt-1">Amin Dananjaya</h3>
+                            <div class="text-[8px] text-blue-400 font-bold uppercase tracking-[0.18em] mt-1.5 mb-2 text-center">Pendidikan Jasmani</div>
+                            <div class="w-full bg-[#0a0a0a]/90 backdrop-blur-md rounded-lg p-2 border border-[#1a1a1a] mt-auto shadow-md">
+                                <div class="grid grid-cols-2 gap-y-1.5 gap-x-2 text-[8px]">
+                                    <div><span class="text-gray-500 block text-[6px] uppercase mb-0.5 font-mono tracking-wider font-bold">Institution</span><span class="text-gray-200 font-semibold truncate block">UNNES</span></div>
+                                    <div><span class="text-gray-500 block text-[6px] uppercase mb-0.5 font-mono tracking-wider font-bold">Year</span><span class="text-gray-200 font-semibold font-mono">2026</span></div>
+                                    <div><span class="text-gray-500 block text-[6px] uppercase mb-0.5 font-mono tracking-wider font-bold">Location</span><span class="text-gray-200 font-semibold">Indonesia</span></div>
+                                    <div><span class="text-gray-500 block text-[6px] uppercase mb-0.5 font-mono tracking-wider font-bold">Status</span><span class="text-blue-400 font-bold flex items-center gap-1"><span class="w-1 h-1 bg-blue-400 rounded-full animate-pulse shadow-[0_0_5px_#60a5fa]"></span>Active</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="profile" class="py-24 px-6 lg:px-20 relative z-30 pointer-events-auto" style="border-top: 1px solid var(--glass-border);">
+        <h2 class="text-4xl md:text-5xl font-bold mb-16 text-center reveal tracking-tight uppercase lang-t" data-id="Profile Saya" data-en="My Profile">Profile Saya</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="glass-panel p-10 lg:col-span-3 reveal shadow-xl rounded-3xl">
+                <h3 class="text-3xl font-bold mb-8 uppercase tracking-widest text-accent">Asal Muasal</h3>
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-12 items-center mt-4">
+                    <div class="leading-relaxed space-y-6" style="color: var(--text-muted);">
+                        <p class="text-2xl font-bold" style="color: var(--text-main);">Halo, saya Amin Dananjaya</p>
+                        <p class="text-lg lang-t" data-id="Saya merupakan lulusan Universitas Negeri Semarang dari Program Studi Ilmu Keolahragaan dan saat ini sedang mengikuti Program Pendidikan Profesi Guru (PPG). Saya berasal dari Kabupaten Wonogiri, Jawa Tengah, yang dikenal dengan budaya luhur, semangat kerja keras, serta nilai kebersamaan yang turut membentuk kepribadian saya hingga saat ini." data-en="I am a graduate of Universitas Negeri Semarang from the Sports Science Study Program and am currently taking the Teacher Professional Education Program (PPG). I come from Wonogiri Regency, Central Java, which is known for its noble culture, strong work ethic, and values of togetherness that have helped shape my personality to this day.">Saya merupakan lulusan Universitas Negeri Semarang dari Program Studi Ilmu Keolahragaan dan saat ini sedang mengikuti Program Pendidikan Profesi Guru (PPG). Saya berasal dari Kabupaten Wonogiri, Jawa Tengah, yang dikenal dengan budaya luhur, semangat kerja keras, serta nilai kebersamaan yang turut membentuk kepribadian saya hingga saat ini.</p>
+                        <p class="text-lg lang-t" data-id="Sebagai calon guru PJOK, saya meyakini bahwa pendidikan memiliki peran penting dalam mengembangkan potensi, membentuk karakter, dan menanamkan nilai-nilai positif kepada peserta didik. Latar belakang lingkungan yang mengajarkan kemandirian, kedisiplinan, dan gotong royong menjadi motivasi bagi saya untuk terus berkontribusi dalam dunia pendidikan. Ketertarikan saya pada bidang olahraga dan pendidikan menguatkan tekad untuk menjadi pendidik yang kompeten, adaptif, dan mampu memberikan inspirasi bagi peserta didik dalam meraih masa depan yang lebih baik." data-en="As a prospective Physical Education teacher, I believe that education plays an important role in developing potential, shaping character, and instilling positive values in students. My background, which taught independence, discipline, and mutual cooperation, motivates me to continue contributing to education. My interest in sports and education strengthens my determination to become a competent, adaptable educator who can inspire students to achieve a better future.">Sebagai calon guru PJOK, saya meyakini bahwa pendidikan memiliki peran penting dalam mengembangkan potensi, membentuk karakter, dan menanamkan nilai-nilai positif kepada peserta didik. Latar belakang lingkungan yang mengajarkan kemandirian, kedisiplinan, dan gotong royong menjadi motivasi bagi saya untuk terus berkontribusi dalam dunia pendidikan. Ketertarikan saya pada bidang olahraga dan pendidikan menguatkan tekad untuk menjadi pendidik yang kompeten, adaptif, dan mampu memberikan inspirasi bagi peserta didik dalam meraih masa depan yang lebih baik.</p>
+                    </div>
+                    <div class="w-full">
+                        <div class="mb-6 overflow-hidden rounded-2xl shadow-2xl border relative group" style="border-color: var(--glass-border);">
+                            <img id="img-daerah" class="w-full h-80 object-cover group-hover:scale-110 transition duration-700" alt="Wonogiri">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6 opacity-0 group-hover:opacity-100 transition duration-300">
+                                <span class="text-white font-bold text-xl tracking-widest uppercase">Kabupaten Wonogiri</span>
+                            </div>
+                        </div>
+                        <h4 class="text-xl font-bold mb-3 uppercase tracking-widest text-accent">Pesona Wonogiri</h4>
+                        <p class="leading-relaxed lang-t" data-id="Wonogiri yang dikenal sebagai Kota Gaplek merupakan daerah yang kaya akan budaya dan kearifan lokal. Masyarakatnya dikenal sederhana, ulet, mandiri, dan menjunjung tinggi gotong royong. Kesenian seperti Wayang Kulit, Karawitan, dan Reog Wonogiri menjadi bagian dari identitas daerah. Nilai kerja keras, ketekunan, dan semangat pantang menyerah dari masyarakat Wonogiri menjadi bekal saya dalam menjalankan profesi sebagai pendidik." data-en="Wonogiri, known as the Gaplek City, is a region rich in culture and local wisdom. Its people are known for being simple, persistent, independent, and highly valuing mutual cooperation. Arts such as Wayang Kulit, Karawitan, and Reog Wonogiri are part of the region's identity. The values of hard work, perseverance, and an unyielding spirit from the people of Wonogiri are my provision in carrying out the teaching profession." style="color: var(--text-muted);">Wonogiri yang dikenal sebagai Kota Gaplek merupakan daerah yang kaya akan budaya dan kearifan lokal. Masyarakatnya dikenal sederhana, ulet, mandiri, dan menjunjung tinggi gotong royong. Kesenian seperti Wayang Kulit, Karawitan, dan Reog Wonogiri menjadi bagian dari identitas daerah. Nilai kerja keras, ketekunan, dan semangat pantang menyerah dari masyarakat Wonogiri menjadi bekal saya dalam menjalankan profesi sebagai pendidik.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-panel p-10 lg:col-span-2 reveal shadow-lg flex flex-col justify-center rounded-3xl">
+                <h3 class="text-3xl font-bold mb-6 uppercase tracking-widest text-accent">Menjadi Pendidik</h3>
+                <div class="leading-relaxed space-y-6 text-lg" style="color: var(--text-muted);">
+                    <p class="lang-t" data-id="Saya bercita-cita mengambil peran dalam menciptakan generasi unggul melalui proses pendidikan yang berkualitas serta menjadi pribadi yang mampu memotivasi dan membimbing peserta didik untuk mewujudkan impian mereka. Saya memilih bidang PJOK karena saya meyakini bahwa PJOK tidak hanya membekali keterampilan gerak, tetapi juga menanamkan sikap disiplin, sportivitas, kerja sama, dan pola hidup sehat yang berguna sepanjang kehidupan." data-en="I aspire to play a role in creating an excellent generation through quality education and become someone who can motivate and guide students to achieve their dreams. I chose Physical Education because I believe PJOK not only equips motor skills, but also instills discipline, sportsmanship, teamwork, and a healthy lifestyle that is useful throughout life.">Saya bercita-cita mengambil peran dalam menciptakan generasi unggul melalui proses pendidikan yang berkualitas serta menjadi pribadi yang mampu memotivasi dan membimbing peserta didik untuk mewujudkan impian mereka. Saya memilih bidang PJOK karena saya meyakini bahwa PJOK tidak hanya membekali keterampilan gerak, tetapi juga menanamkan sikap disiplin, sportivitas, kerja sama, dan pola hidup sehat yang berguna sepanjang kehidupan.</p>
+                    <div class="p-6 rounded-2xl border border-dashed bg-black/5 dark:bg-white/5" style="border-color: var(--glass-border);">
+                        <h4 class="font-bold text-accent mb-3 uppercase tracking-widest">Harapan & Tujuan:</h4>
+                        <p class="lang-t font-medium" data-id="Menjadi guru PJOK yang kompeten, reflektif, dan inspiratif dalam menghadirkan pembelajaran yang bermakna serta mendukung perkembangan peserta didik secara optimal." data-en="To become a competent, reflective, and inspiring Physical Education teacher in presenting meaningful learning that supports students' development optimally.">Menjadi guru PJOK yang kompeten, reflektif, dan inspiratif dalam menghadirkan pembelajaran yang bermakna serta mendukung perkembangan peserta didik secara optimal.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-panel p-10 lg:col-span-1 reveal text-center flex flex-col justify-center items-center shadow-lg relative overflow-hidden group border-2 border-transparent hover:border-accent transition duration-500 rounded-3xl">
+                <div class="absolute inset-0 bg-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div class="text-6xl text-accent/30 mb-8 transform group-hover:scale-110 transition-transform duration-500 font-serif font-black">"</div>
+                <p class="text-xl italic font-bold leading-relaxed z-10" style="color: var(--text-main);">"Hidup ini seperti pensil, cepat atau lambat pasti akan habis. Jadi, jangan lupa diraut biar gak tumpul otaknya."<br><span class="text-sm mt-6 block font-bold text-accent tracking-widest uppercase">- unkwown -</span></p>
+            </div>
+            <div class="glass-panel p-10 lg:col-span-3 reveal shadow-xl rounded-3xl">
+                <h3 class="text-3xl font-bold mb-8 uppercase tracking-widest text-accent">Hobi & Minat</h3>
+                <div class="flex flex-wrap gap-4 mb-10 relative z-10">
+                    <button onclick="openHobi(event, 'hiking')" class="hobi-btn px-8 py-3.5 rounded-full border hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-black transition active-hobi bg-gray-900 text-white dark:bg-white dark:text-black font-bold shadow-md tracking-widest text-xs uppercase">MENDAKI</button>
+                    <button onclick="openHobi(event, 'olahraga')" class="hobi-btn px-8 py-3.5 rounded-full border hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-black transition font-semibold tracking-widest text-xs uppercase" style="border-color: var(--glass-border);">VOLI</button>
+                    <button onclick="openHobi(event, 'bola')" class="hobi-btn px-8 py-3.5 rounded-full border hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-black transition font-semibold tracking-widest text-xs uppercase" style="border-color: var(--glass-border);">SEPAK BOLA</button>
+                </div>
+                <div id="hobi-hiking" class="tab-content active">
+                    <div class="flex flex-col md:flex-row gap-10 items-center">
+                        <div class="w-full md:w-1/2 overflow-hidden rounded-3xl shadow-xl border" style="border-color: var(--glass-border);">
+                            <img id="img-hiking" class="w-full h-80 object-cover hover:scale-105 transition duration-700" alt="Mendaki Gunung">
+                        </div>
+                        <div class="w-full md:w-1/2">
+                            <h4 class="text-3xl font-bold mb-4 uppercase tracking-widest text-accent">Mendaki Gunung</h4>
+                            <p class="leading-relaxed text-lg lang-t" data-id="Saya menyukai kegiatan mendaki gunung karena mengajarkan kesabaran, ketangguhan, dan rasa syukur. Saya pernah mendaki beberapa gunung di Jawa Tengah, seperti Gunung Slamet, Gunung Lawu, serta Gunung Sindoro–Sumbing. Melalui pendakian, saya belajar bahwa setiap langkah kecil sangat berarti untuk mencapai puncak, filosofi yang juga saya terapkan dalam mendidik." data-en="I enjoy mountain climbing because it teaches patience, resilience, and gratitude. I have climbed several mountains in Central Java, such as Mount Slamet, Mount Lawu, and Mount Sindoro-Sumbing. Through climbing, I learned that every small step is meaningful to reach the peak, a philosophy I also apply in teaching." style="color: var(--text-muted);">Saya menyukai kegiatan mendaki gunung karena mengajarkan kesabaran, ketangguhan, dan rasa syukur. Saya pernah mendaki beberapa gunung di Jawa Tengah, seperti Gunung Slamet, Gunung Lawu, serta Gunung Sindoro–Sumbing. Melalui pendakian, saya belajar bahwa setiap langkah kecil sangat berarti untuk mencapai puncak, filosofi yang juga saya terapkan dalam mendidik.</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="hobi-olahraga" class="tab-content">
+                    <div class="flex flex-col md:flex-row gap-10 items-center">
+                        <div class="w-full md:w-1/2 overflow-hidden rounded-3xl shadow-xl border" style="border-color: var(--glass-border);">
+                            <img id="img-olahraga" class="w-full h-80 object-cover hover:scale-105 transition duration-700" alt="Voli">
+                        </div>
+                        <div class="w-full md:w-1/2">
+                            <h4 class="text-3xl font-bold mb-4 uppercase tracking-widest text-accent">Voli</h4>
+                            <p class="leading-relaxed text-lg lang-t" data-id="Voli menjadi aktivitas yang membantu saya menjaga kebugaran sekaligus melatih kerja sama, konsentrasi, dan ketepatan dalam mengambil keputusan di lapangan. Sebagai guru olahraga, menjaga stamina, koordinasi, dan kesehatan tubuh adalah bentuk profesionalisme dasar yang saya junjung tinggi." data-en="Volleyball is an activity that helps me maintain fitness while training teamwork, concentration, and quick decision-making on the court. As a sports teacher, maintaining stamina, coordination, and physical health is a basic form of professionalism that I uphold highly." style="color: var(--text-muted);">Voli menjadi aktivitas yang membantu saya menjaga kebugaran sekaligus melatih kerja sama, konsentrasi, dan ketepatan dalam mengambil keputusan di lapangan. Sebagai guru olahraga, menjaga stamina, koordinasi, dan kesehatan tubuh adalah bentuk profesionalisme dasar yang saya junjung tinggi.</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="hobi-bola" class="tab-content">
+                    <div class="flex flex-col md:flex-row gap-10 items-center">
+                        <div class="w-full md:w-1/2 overflow-hidden rounded-3xl shadow-xl border" style="border-color: var(--glass-border);">
+                            <img id="img-bola" class="w-full h-80 object-cover hover:scale-105 transition duration-700" alt="Sepak Bola">
+                        </div>
+                        <div class="w-full md:w-1/2">
+                            <h4 class="text-3xl font-bold mb-4 uppercase tracking-widest text-accent">Sepak Bola</h4>
+                            <p class="leading-relaxed text-lg lang-t" data-id="Sepak bola bukan sekadar olahraga bagi saya, melainkan tentang kerja sama tim, komunikasi, dan strategi. Bermain di lapangan hijau melatih saya untuk mengambil keputusan cepat dan menjaga solidaritas bersama rekan satu tim, nilai-nilai yang esensial dalam pendidikan." data-en="Football is not just a sport for me, but about teamwork, communication, and strategy. Playing on the green field trains me to make quick decisions and maintain solidarity with teammates, values that are essential in education." style="color: var(--text-muted);">Sepak bola bukan sekadar olahraga bagi saya, melainkan tentang kerja sama tim, komunikasi, dan strategi. Bermain di lapangan hijau melatih saya untuk mengambil keputusan cepat dan menjaga solidaritas bersama rekan satu tim, nilai-nilai yang esensial dalam pendidikan.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-panel p-10 flex flex-col reveal lg:col-span-1 shadow-lg hover:shadow-2xl transition rounded-3xl">
+                <h3 class="text-2xl font-bold mb-4 uppercase tracking-widest text-accent">Lokasi LPTK</h3>
+                <p class="text-sm mb-6 flex-grow leading-relaxed lang-t" data-id="Universitas Negeri Semarang menjadi tempat saya menempuh Pendidikan Profesi Guru (PPG). Melalui berbagai proses pembelajaran, saya dibekali kompetensi pedagogik, profesional, sosial, dan kepribadian untuk menjadi pendidik yang adaptif dan berintegritas. Selama mengikuti program ini, saya memperoleh pengalaman dalam merancang, melaksanakan, dan mengevaluasi pembelajaran yang berpusat pada peserta didik, memanfaatkan teknologi dalam proses pembelajaran, serta mengembangkan kemampuan reflektif untuk meningkatkan kualitas praktik mengajar. Program ini juga memperkuat pemahaman saya terhadap etika profesi guru, kemampuan berkolaborasi dengan berbagai pihak, serta komitmen untuk memberikan layanan pendidikan yang berkualitas guna mendukung perkembangan peserta didik secara optimal." data-en="Universitas Negeri Semarang is where I pursue the Teacher Professional Education Program (PPG). Through various learning processes, I am equipped with pedagogical, professional, social, and personality competencies to become an adaptive educator with integrity. During this program, I gained experience in designing, implementing, and evaluating student-centered learning, utilizing technology in the learning process, and developing reflective abilities to improve the quality of teaching practice. This program also strengthened my understanding of teacher professional ethics, my ability to collaborate with various parties, and my commitment to providing quality educational services to support students' optimal development." style="color: var(--text-muted);">Universitas Negeri Semarang menjadi tempat saya menempuh Pendidikan Profesi Guru (PPG). Melalui berbagai proses pembelajaran, saya dibekali kompetensi pedagogik, profesional, sosial, dan kepribadian untuk menjadi pendidik yang adaptif dan berintegritas. Selama mengikuti program ini, saya memperoleh pengalaman dalam merancang, melaksanakan, dan mengevaluasi pembelajaran yang berpusat pada peserta didik, memanfaatkan teknologi dalam proses pembelajaran, serta mengembangkan kemampuan reflektif untuk meningkatkan kualitas praktik mengajar. Program ini juga memperkuat pemahaman saya terhadap etika profesi guru, kemampuan berkolaborasi dengan berbagai pihak, serta komitmen untuk memberikan layanan pendidikan yang berkualitas guna mendukung perkembangan peserta didik secara optimal.</p>
+                <div class="w-full h-56 rounded-2xl overflow-hidden border shadow-inner" style="border-color: var(--glass-border);">
+                    <iframe src="https://www.google.com/maps?q=Universitas+Negeri+Semarang&output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Universitas Negeri Semarang Google Maps"></iframe>
+                </div>
+                <a href="https://maps.app.goo.gl/4kD1xHi9bhuzYXVX6" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full border font-bold tracking-widest text-xs uppercase transition hover:opacity-80" style="border-color: var(--glass-border); color: var(--text-main); background: rgba(255,255,255,0.06);">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    Buka di Google Maps
+                </a>
+            </div>
+            <div class="glass-panel p-10 flex flex-col reveal lg:col-span-1 shadow-lg hover:shadow-2xl transition rounded-3xl">
+                <h3 class="text-2xl font-bold mb-4 uppercase tracking-widest text-accent">Sekolah PPL</h3>
+                <p class="text-sm mb-6 flex-grow leading-relaxed lang-t" data-id="SMP Negeri 21 Kota Semarang menjadi tempat saya melaksanakan Program Praktik Pengalaman Lapangan (PPL). Kegiatan ini memberikan pengalaman berharga dalam mengimplementasikan berbagai teori dan konsep pendidikan ke dalam praktik pembelajaran yang nyata di lingkungan sekolah. Selama PPL, saya belajar merancang perangkat pembelajaran, melaksanakan kegiatan belajar mengajar yang berpusat pada peserta didik, mengelola kelas secara efektif, serta melakukan penilaian dan refleksi terhadap proses pembelajaran. Selain itu, saya mengembangkan kemampuan komunikasi, kolaborasi, dan adaptasi melalui interaksi dengan peserta didik, guru, tenaga kependidikan, serta seluruh warga sekolah. Pengalaman ini semakin memperkuat kesiapan saya untuk menjalankan peran sebagai pendidik yang profesional, responsif, dan berorientasi pada pengembangan potensi peserta didik secara optimal." data-en="SMP Negeri 21 Kota Semarang became the place where I carried out the Teaching Practice Program (PPL). This activity provided valuable experience in implementing various educational theories and concepts into real learning practices in the school environment. During PPL, I learned to design learning devices, conduct student-centered teaching and learning activities, manage classrooms effectively, and carry out assessment and reflection on the learning process. In addition, I developed communication, collaboration, and adaptation skills through interactions with students, teachers, education staff, and the entire school community. This experience further strengthened my readiness to serve as a professional, responsive educator focused on optimizing students' potential development." style="color: var(--text-muted);">SMP Negeri 21 Kota Semarang menjadi tempat saya melaksanakan Program Praktik Pengalaman Lapangan (PPL). Kegiatan ini memberikan pengalaman berharga dalam mengimplementasikan berbagai teori dan konsep pendidikan ke dalam praktik pembelajaran yang nyata di lingkungan sekolah. Selama PPL, saya belajar merancang perangkat pembelajaran, melaksanakan kegiatan belajar mengajar yang berpusat pada peserta didik, mengelola kelas secara efektif, serta melakukan penilaian dan refleksi terhadap proses pembelajaran. Selain itu, saya mengembangkan kemampuan komunikasi, kolaborasi, dan adaptasi melalui interaksi dengan peserta didik, guru, tenaga kependidikan, serta seluruh warga sekolah. Pengalaman ini semakin memperkuat kesiapan saya untuk menjalankan peran sebagai pendidik yang profesional, responsif, dan berorientasi pada pengembangan potensi peserta didik secara optimal.</p>
+                <div class="w-full h-56 rounded-2xl overflow-hidden border shadow-inner" style="border-color: var(--glass-border);">
+                    <iframe src="https://www.google.com/maps?q=SMP+Negeri+21+Kota+Semarang&output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="SMP Negeri 21 Kota Semarang Google Maps"></iframe>
+                </div>
+                <a href="https://maps.app.goo.gl/vpi25qssJKoQjxuPA" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full border font-bold tracking-widest text-xs uppercase transition hover:opacity-80" style="border-color: var(--glass-border); color: var(--text-main); background: rgba(255,255,255,0.06);">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    Buka di Google Maps
+                </a>
+            </div>
+            <div class="flex flex-col gap-8 lg:col-span-1">
+                <div class="glass-panel p-10 reveal flex-1 shadow-lg hover:shadow-2xl transition rounded-3xl">
+                    <h3 class="text-xl font-bold mb-4 uppercase tracking-widest text-accent">Filosofi Mengajar</h3>
+                    <div class="text-sm leading-relaxed space-y-3" style="color: var(--text-muted);">
+                        <p>Bagi saya, pendidikan adalah proses membimbing peserta didik agar berkembang secara optimal sesuai potensi yang dimilikinya. Keberhasilan tidak hanya dilihat dari hasil akhir, tetapi juga dari proses, kedisiplinan, kerja keras, dan kemampuan belajar dari setiap pengalaman. Oleh karena itu, setiap peserta didik perlu dihargai dan didukung sesuai karakteristiknya.</p>
+                        <p>Selama PPL Terbimbing, saya memahami bahwa guru tidak hanya berperan sebagai penyampai materi, tetapi juga fasilitator yang menciptakan lingkungan belajar yang aman, aktif, dan bermakna. Pandangan ini sejalan dengan teori konstruktivisme yang menempatkan peserta didik sebagai subjek aktif dalam membangun pengetahuan melalui pengalaman dan interaksi.</p>
+                        <p>Sebagai calon guru PJOK, saya berkomitmen menjadi pendidik yang profesional, reflektif, dan inspiratif. Saya ingin menghadirkan pembelajaran yang tidak hanya mengembangkan keterampilan gerak, tetapi juga menanamkan nilai disiplin, sportivitas, kerja sama, dan gaya hidup sehat sebagai bekal peserta didik dalam kehidupan.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-panel p-10 reveal flex-1 shadow-lg hover:shadow-2xl transition overflow-y-auto max-h-[400px] custom-scrollbar lg:col-span-3 rounded-3xl">
+                <h3 class="text-2xl font-bold mb-4 uppercase tracking-widest text-accent">Refleksi Diri</h3>
+                <div class="text-sm md:text-base leading-relaxed space-y-4" style="color: var(--text-muted);">
+                    <p>Selama PPL Terbimbing, saya memperoleh banyak pengalaman mengenai tugas dan tanggung jawab guru melalui kegiatan orientasi, observasi, asistensi, hingga praktik mengajar secara langsung. Saya belajar menyusun perangkat pembelajaran, mengelola proses belajar di kelas, melaksanakan asesmen, serta melakukan refleksi sebagai upaya meningkatkan kualitas pembelajaran. Tantangan yang saya temui adalah membangun partisipasi aktif dan kedisiplinan peserta didik yang memiliki karakter serta kemampuan yang beragam. Untuk menghadapinya, saya berupaya menerapkan pembelajaran yang lebih menarik, menjalin komunikasi yang baik dengan peserta didik, serta menyesuaikan metode pembelajaran sesuai kebutuhan mereka.</p>
+                    <p>Melalui bimbingan dan refleksi bersama guru pamong serta dosen pembimbing, saya mendapatkan berbagai masukan untuk terus mengembangkan inovasi pembelajaran, memperkuat penerapan pembelajaran berdiferensiasi, memanfaatkan teknologi secara efektif, dan menyusun asesmen yang berpusat pada peserta didik. Pengalaman tersebut memberikan pemahaman bahwa menjadi guru bukanlah tentang menjadi yang paling sempurna, melainkan tentang kesediaan untuk terus belajar, menyesuaikan diri dengan perubahan, dan berkembang demi memberikan layanan pembelajaran yang terbaik bagi peserta didik.</p>
+                </div>
+            </div>
+            <div class="glass-panel p-10 lg:col-span-3 reveal shadow-xl rounded-3xl mt-[-10px]">
+                <h3 class="text-2xl font-bold mb-4 uppercase tracking-widest text-accent">Model Guru yang Dituju</h3>
+                <p class="text-base leading-relaxed" style="color: var(--text-muted);">Saya memiliki tujuan untuk menjadi guru PJOK yang kompeten, inovatif, dan mampu memberikan inspirasi bagi peserta didik melalui pembelajaran yang berkualitas dan berpusat pada kebutuhan mereka. Saya bertekad untuk terus meningkatkan kompetensi pedagogik, profesional, sosial, dan kepribadian dengan semangat belajar berkelanjutan, pengembangan diri, serta evaluasi dan refleksi secara konsisten. Nilai-nilai yang ingin saya tanamkan dalam diri sebagai pendidik adalah kejujuran, tanggung jawab, kepedulian, kemampuan beradaptasi terhadap perkembangan zaman, serta menjadi teladan dalam membentuk karakter, sportivitas, dan pola hidup sehat peserta didik.</p>
+            </div>
+        </div>
+    </section>
+    <section id="artefak-pembelajaran" class="py-24 px-6 lg:px-20 relative z-30 pointer-events-auto" style="border-top: 1px solid var(--glass-border);">
+        <div class="text-center mb-20 reveal">
+            <h2 class="text-4xl md:text-5xl font-bold mb-6 uppercase tracking-widest lang-t" data-id="Artefak Pembelajaran" data-en="Learning Artifacts">Artefak Pembelajaran</h2>
+            <p class="text-lg max-w-3xl mx-auto lang-t" data-id="Kumpulan dokumen, media selama program PPG yang merepresentasikan kompetensi pengajaran saya." data-en="A collection of documents and media during the PPG program that represent my teaching competencies." style="color: var(--text-muted);">Kumpulan dokumen, media selama program PPG yang merepresentasikan kompetensi pengajaran saya.</p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 reveal">
+            <div class="glass-panel p-10 text-center cursor-pointer hover:-translate-y-3 hover:shadow-2xl transition-all duration-500 shadow-lg group rounded-3xl" onclick="openArtefak('Modul Ajar', 'fa-book-open', 'text-blue-500')">
+                <div class="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/5 flex items-center justify-center mb-6 group-hover:scale-110 transition duration-300 border border-blue-500/20">
+                    <i class="fa-solid fa-book-open text-4xl text-blue-500"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-3 uppercase tracking-widest text-blue-500">Modul Ajar</h3>
+                <p class="text-base font-medium" style="color: var(--text-muted);">Rancangan Pembelajaran</p>
+                <button class="mt-8 px-8 py-3 rounded-full border border-blue-500 text-blue-500 font-bold tracking-widest text-xs group-hover:bg-blue-500 group-hover:text-white transition uppercase">LIHAT DETAIL</button>
+            </div>
+            <div class="glass-panel p-10 text-center cursor-pointer hover:-translate-y-3 hover:shadow-2xl transition-all duration-500 shadow-lg group rounded-3xl" onclick="openArtefak('Media Pembelajaran', 'fa-photo-film', 'text-purple-400')">
+                <div class="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-purple-500/20 to-purple-600/5 flex items-center justify-center mb-6 group-hover:scale-110 transition duration-300 border border-purple-500/20">
+                    <i class="fa-solid fa-photo-film text-4xl text-purple-400"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-3 uppercase tracking-widest text-purple-400">Media Belajar</h3>
+                <p class="text-base font-medium" style="color: var(--text-muted);">Aset Visual Instruksional</p>
+                <button class="mt-8 px-8 py-3 rounded-full border border-purple-400 text-purple-400 font-bold tracking-widest text-xs group-hover:bg-purple-400 group-hover:text-white transition uppercase">LIHAT DETAIL</button>
+            </div>
+            <div class="glass-panel p-10 text-center cursor-pointer hover:-translate-y-3 hover:shadow-2xl transition-all duration-500 shadow-lg group rounded-3xl" onclick="openArtefak('Siklus', 'fa-arrows-spin', 'text-blue-400')">
+                <div class="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/5 flex items-center justify-center mb-6 group-hover:scale-110 transition duration-300 border border-blue-500/20">
+                    <i class="fa-solid fa-arrows-spin text-4xl text-blue-400"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-3 uppercase tracking-widest text-blue-400">Refleksi Siklus</h3>
+                <p class="text-base font-medium" style="color: var(--text-muted);">Refleksi Siklus</p>
+                <button class="mt-8 px-8 py-3 rounded-full border border-blue-400 text-blue-400 font-bold tracking-widest text-xs group-hover:bg-blue-400 group-hover:text-white transition uppercase">LIHAT DETAIL</button>
+            </div>
+            <div class="glass-panel p-10 text-center cursor-pointer hover:-translate-y-3 hover:shadow-2xl transition-all duration-500 shadow-lg group rounded-3xl" onclick="openArtefak('Penilaian', 'fa-clipboard-check', 'text-red-400')">
+                <div class="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-red-500/20 to-red-600/5 flex items-center justify-center mb-6 group-hover:scale-110 transition duration-300 border border-red-500/20">
+                    <i class="fa-solid fa-clipboard-check text-4xl text-red-400"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-3 uppercase tracking-widest text-red-400">Penilaian</h3>
+                <p class="text-base font-medium" style="color: var(--text-muted);">DPL & GP</p>
+                <button class="mt-8 px-8 py-3 rounded-full border border-red-400 text-red-400 font-bold tracking-widest text-xs group-hover:bg-red-400 group-hover:text-white transition uppercase">LIHAT DETAIL</button>
+            </div>
+            <div class="glass-panel p-10 text-center cursor-pointer hover:-translate-y-3 hover:shadow-2xl transition-all duration-500 shadow-lg group rounded-3xl" onclick="openArtefak('Dokumentasi', 'fa-folder-tree', 'text-gray-400')">
+                <div class="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-gray-500/20 to-gray-600/5 flex items-center justify-center mb-6 group-hover:scale-110 transition duration-300 border border-gray-500/20">
+                    <i class="fa-solid fa-folder-tree text-4xl text-gray-400"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-3 uppercase tracking-widest text-gray-400">Dokumentasi</h3>
+                <p class="text-base font-medium" style="color: var(--text-muted);">Arsip Log Kegiatan</p>
+                <button class="mt-8 px-8 py-3 rounded-full border border-gray-400 text-gray-400 font-bold tracking-widest text-xs group-hover:bg-gray-400 group-hover:text-white transition uppercase">LIHAT DETAIL</button>
+            </div>
+        </div>
+    </section>
+    <div id="artefak-modal">
+        <div class="modal-box glass-panel p-8 md:p-12 max-w-6xl w-[95%] text-center relative bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.5)] flex flex-col max-h-[90vh]">
+            <button onclick="closeArtefak()" class="absolute top-6 left-6 hover:text-accent transition flex items-center gap-2 font-bold tracking-widest text-xs z-10 bg-black/5 dark:bg-white/10 px-5 py-3 rounded-xl uppercase" style="color: var(--text-main);">TUTUP</button>
+            <div id="modal-header-container" class="mt-14 md:mt-0 flex flex-col items-center shrink-0 border-b pb-8 mb-8" style="border-color: var(--glass-border);">
+                <i id="modal-icon" class="fa-solid fa-file-pdf text-6xl md:text-7xl text-accent mb-6 filter drop-shadow-lg"></i>
+                <h2 id="modal-title" class="text-3xl md:text-5xl font-bold mb-4 tracking-widest uppercase" style="color: var(--text-main);">Judul Artefak</h2>
+                <p id="modal-subtitle" class="text-base md:text-lg font-medium" style="color: var(--text-muted);"></p>
+            </div>
+            <div id="modal-file-list" class="w-full overflow-y-auto pr-2 custom-scrollbar flex-grow text-left pb-6"></div>
+        </div>
+    </div>
+    <section id="kompetensi" class="py-24 px-6 lg:px-20 relative z-30 pointer-events-auto" style="border-top: 1px solid var(--glass-border);">
+        <h2 class="text-4xl md:text-5xl font-bold mb-16 text-center reveal tracking-widest uppercase lang-t" data-id="Kompetensi" data-en="Competence">Kompetensi</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
+            <div class="glass-panel p-12 reveal shadow-xl border-t-4 border-t-accent rounded-3xl">
+                <h3 class="text-3xl font-bold mb-10 uppercase tracking-widest text-accent">Pedagogik</h3>
+                <div class="mb-8">
+                    <div class="flex justify-between text-base mb-3 font-bold" style="color: var(--text-main);"><span>Perencanaan Pembelajaran</span><span>90%</span></div>
+                    <div class="progress-bar-bg"><div class="progress-bar-fill text-accent" data-width="90%"></div></div>
+                </div>
+                <div class="mb-8">
+                    <div class="flex justify-between text-base mb-3 font-bold" style="color: var(--text-main);"><span>Asesmen & Evaluasi</span><span>88%</span></div>
+                    <div class="progress-bar-bg"><div class="progress-bar-fill text-accent" data-width="88%"></div></div>
+                </div>
+                <div class="mb-8">
+                    <div class="flex justify-between text-base mb-3 font-bold" style="color: var(--text-main);"><span>Diferensiasi Pembelajaran</span><span>85%</span></div>
+                    <div class="progress-bar-bg"><div class="progress-bar-fill text-accent" data-width="85%"></div></div>
+                </div>
+                <div class="mb-4">
+                    <div class="flex justify-between text-base mb-3 font-bold" style="color: var(--text-main);"><span>Pengelolaan Kelas</span><span>87%</span></div>
+                    <div class="progress-bar-bg"><div class="progress-bar-fill text-accent" data-width="87%"></div></div>
+                </div>
+            </div>
+            <div class="glass-panel p-12 reveal shadow-xl border-t-4 border-t-blue-500 rounded-3xl">
+                <h3 class="text-3xl font-bold mb-10 uppercase tracking-widest text-blue-500">Teknologi</h3>
+                <div class="mb-8">
+                    <div class="flex justify-between text-base mb-3 font-bold" style="color: var(--text-main);"><span>Microsoft Office</span><span>92%</span></div>
+                    <div class="progress-bar-bg"><div class="progress-bar-fill text-blue-500" data-width="92%"></div></div>
+                </div>
+                <div class="mb-8">
+                    <div class="flex justify-between text-base mb-3 font-bold" style="color: var(--text-main);"><span>Canva Design</span><span>90%</span></div>
+                    <div class="progress-bar-bg"><div class="progress-bar-fill text-blue-500" data-width="90%"></div></div>
+                </div>
+                <div class="mb-8">
+                    <div class="flex justify-between text-base mb-3 font-bold" style="color: var(--text-main);"><span>Google Workspace</span><span>88%</span></div>
+                    <div class="progress-bar-bg"><div class="progress-bar-fill text-blue-500" data-width="88%"></div></div>
+                </div>
+                <div class="mb-4">
+                    <div class="flex justify-between text-base mb-3 font-bold" style="color: var(--text-main);"><span>Editing Video Pembelajaran</span><span>85%</span></div>
+                    <div class="progress-bar-bg"><div class="progress-bar-fill text-blue-500" data-width="85%"></div></div>
+                </div>
+            </div>
+        </div>
+        <div class="glass-panel p-14 text-center reveal shadow-xl rounded-3xl">
+            <h3 class="text-3xl font-bold mb-12 uppercase tracking-widest text-accent">Soft Skills</h3>
+            <div class="flex flex-wrap justify-center gap-5">
+                <span class="px-8 py-4 bg-white/5 dark:bg-white/10 border rounded-2xl text-base hover:scale-105 transition cursor-default font-bold tracking-widest shadow-sm" style="border-color: var(--glass-border); color: var(--text-main);">KOMUNIKASI EFEKTIF</span>
+                <span class="px-8 py-4 bg-white/5 dark:bg-white/10 border rounded-2xl text-base hover:scale-105 transition cursor-default font-bold tracking-widest shadow-sm" style="border-color: var(--glass-border); color: var(--text-main);">BERPIKIR KRITIS</span>
+                <span class="px-8 py-4 bg-white/5 dark:bg-white/10 border rounded-2xl text-base hover:scale-105 transition cursor-default font-bold tracking-widest shadow-sm" style="border-color: var(--glass-border); color: var(--text-main);">KOLABORASI TIM</span>
+                <span class="px-8 py-4 bg-white/5 dark:bg-white/10 border rounded-2xl text-base hover:scale-105 transition cursor-default font-bold tracking-widest shadow-sm" style="border-color: var(--glass-border); color: var(--text-main);">EMPATI</span>
+                <span class="px-8 py-4 bg-white/5 dark:bg-white/10 border rounded-2xl text-base hover:scale-105 transition cursor-default font-bold tracking-widest shadow-sm" style="border-color: var(--glass-border); color: var(--text-main);">KREATIVITAS</span>
+                <span class="px-8 py-4 bg-white/5 dark:bg-white/10 border rounded-2xl text-base hover:scale-105 transition cursor-default font-bold tracking-widest shadow-sm" style="border-color: var(--glass-border); color: var(--text-main);">ADAPTIF</span>
+                <span class="px-8 py-4 bg-white/5 dark:bg-white/10 border rounded-2xl text-base hover:scale-105 transition cursor-default font-bold tracking-widest shadow-sm" style="border-color: var(--glass-border); color: var(--text-main);">PROBLEM SOLVING</span>
+                <span class="px-8 py-4 bg-white/5 dark:bg-white/10 border rounded-2xl text-base hover:scale-105 transition cursor-default font-bold tracking-widest shadow-sm" style="border-color: var(--glass-border); color: var(--text-main);">GROWTH MINDSET</span>
+                <span class="px-8 py-4 bg-white/5 dark:bg-white/10 border rounded-2xl text-base hover:scale-105 transition cursor-default font-bold tracking-widest shadow-sm" style="border-color: var(--glass-border); color: var(--text-main);">BERTANGGUNG JAWAB</span>
+                <span class="px-8 py-4 bg-white/5 dark:bg-white/10 border rounded-2xl text-base hover:scale-105 transition cursor-default font-bold tracking-widest shadow-sm" style="border-color: var(--glass-border); color: var(--text-main);">DISIPLIN WAKTU</span>
+            </div>
+        </div>
+    </section>
+    <section id="contact" class="py-24 px-6 lg:px-20 relative z-30 pointer-events-auto" style="border-top: 1px solid var(--glass-border);">
+        <h2 class="text-4xl md:text-5xl font-bold mb-16 text-center reveal tracking-widest uppercase lang-t" data-id="Hubungi Saya" data-en="Contact Me">Hubungi Saya</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-0 glass-panel overflow-hidden shadow-2xl reveal border-2 rounded-3xl" style="border-color: var(--glass-border);">
+            <div class="p-10 md:p-14 border-b lg:border-b-0 lg:border-r bg-white/5 dark:bg-black/20" style="border-color: var(--glass-border);">
+                <div class="flex items-center gap-6 mb-8">
+                    <img id="img-contact" src="" alt="Amin Dananjaya" class="w-24 h-24 rounded-full object-cover border-4 shadow-xl" style="border-color: var(--glass-border);">
+                    <div>
+                        <h3 class="text-3xl font-bold mb-2 uppercase tracking-widest text-accent">Mari Berkolaborasi</h3>
+                        <p class="text-sm font-medium" style="color: var(--text-muted);">Silakan hubungi saya melalui form di samping, atau melalui detail kontak langsung di bawah ini.</p>
+                    </div>
+                </div>
+                <div class="space-y-6">
+                    <a href="mailto:amindanjaya193@gmail.com" class="flex items-center gap-6 p-4 rounded-2xl hover:bg-white/10 dark:hover:bg-white/5 transition border border-transparent hover:border-white/10 group">
+                        <div class="w-16 h-16 rounded-2xl flex justify-center items-center text-3xl font-bold tracking-widest border shadow-inner bg-white/5 dark:bg-black/50 group-hover:scale-110 transition" style="border-color: var(--glass-border); color: var(--text-main);"><i class="fa-solid fa-envelope text-accent"></i></div>
+                        <div><h4 class="text-xs font-bold uppercase tracking-widest mb-1" style="color: var(--text-muted);">Email Pribadi</h4><p class="font-bold text-xl break-all" style="color: var(--text-main);">amindanjaya193@gmail.com</p></div>
+                    </a>
+                    <a href="https://wa.me/6281935692434" target="_blank" class="flex items-center gap-6 p-4 rounded-2xl hover:bg-white/10 dark:hover:bg-white/5 transition border border-transparent hover:border-white/10 group">
+                        <div class="w-16 h-16 rounded-2xl flex justify-center items-center text-3xl font-bold tracking-widest border shadow-inner bg-white/5 dark:bg-black/50 group-hover:scale-110 transition" style="border-color: var(--glass-border); color: var(--text-main);"><i class="fa-brands fa-whatsapp text-accent"></i></div>
+                        <div><h4 class="text-xs font-bold uppercase tracking-widest mb-1" style="color: var(--text-muted);">WhatsApp</h4><p class="font-bold text-xl" style="color: var(--text-main);">0819-3569-2434</p></div>
+                    </a>
+                    <a href="https://instagram.com/danan_jayadj" target="_blank" class="flex items-center gap-6 p-4 rounded-2xl hover:bg-white/10 dark:hover:bg-white/5 transition border border-transparent hover:border-white/10 group">
+                        <div class="w-16 h-16 rounded-2xl flex justify-center items-center text-3xl font-bold tracking-widest border shadow-inner bg-white/5 dark:bg-black/50 group-hover:scale-110 transition" style="border-color: var(--glass-border); color: var(--text-main);"><i class="fa-brands fa-instagram text-accent"></i></div>
+                        <div><h4 class="text-xs font-bold uppercase tracking-widest mb-1" style="color: var(--text-muted);">Instagram</h4><p class="font-bold text-xl" style="color: var(--text-main);">@danan_jayadj</p></div>
+                    </a>
+                    <div class="flex items-center gap-6 p-4 rounded-2xl border border-transparent group">
+                        <div class="w-16 h-16 rounded-2xl flex justify-center items-center text-3xl font-bold tracking-widest border shadow-inner bg-white/5 dark:bg-black/50 group-hover:scale-110 transition" style="border-color: var(--glass-border); color: var(--text-main);"><i class="fa-solid fa-location-dot text-accent"></i></div>
+                        <div><h4 class="text-xs font-bold uppercase tracking-widest mb-1" style="color: var(--text-muted);">Domisili</h4><p class="font-bold text-xl" style="color: var(--text-main);">Semarang, Jawa Tengah, Indonesia</p></div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-10 md:p-14 bg-white/20 dark:bg-black/40 flex flex-col justify-center">
+                <form class="space-y-6">
+                    <div>
+                        <label class="block text-xs font-bold tracking-widest uppercase mb-3 ml-2" style="color: var(--text-muted);">Nama Lengkap</label>
+                        <input type="text" placeholder="Masukkan nama Anda..." class="w-full px-6 py-4 border-2 rounded-2xl outline-none focus:border-accent transition bg-white/50 dark:bg-black/50 font-bold shadow-inner" style="border-color: var(--glass-border); color: var(--text-main);">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold tracking-widest uppercase mb-3 ml-2" style="color: var(--text-muted);">Email</label>
+                        <input type="email" placeholder="Masukkan alamat email aktif..." class="w-full px-6 py-4 border-2 rounded-2xl outline-none focus:border-accent transition bg-white/50 dark:bg-black/50 font-bold shadow-inner" style="border-color: var(--glass-border); color: var(--text-main);">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold tracking-widest uppercase mb-3 ml-2" style="color: var(--text-muted);">Pesan Anda</label>
+                        <textarea placeholder="Tuliskan pesan, pertanyaan, atau ajakan diskusi..." rows="5" class="w-full px-6 py-4 border-2 rounded-2xl outline-none focus:border-accent transition bg-white/50 dark:bg-black/50 font-bold shadow-inner resize-none" style="border-color: var(--glass-border); color: var(--text-main);"></textarea>
+                    </div>
+                    <button type="button" onclick="alert('Terima kasih, pesan Anda telah disimulasikan terkirim!')" class="w-full py-5 mt-4 bg-gray-900 text-white dark:bg-white dark:text-black font-bold tracking-widest uppercase rounded-2xl hover:opacity-80 active:scale-95 transition text-lg shadow-xl hover:shadow-2xl hover:-translate-y-1 transform">Kirim Pesan Sekarang</button>
+                </form>
+            </div>
+        </div>
+    </section>
+    <footer class="text-center py-10 text-sm font-medium border-t z-30 relative pointer-events-auto bg-black/5 dark:bg-white/5" style="border-color: var(--glass-border); color: var(--text-muted);">
+        <p class="text-base font-bold tracking-widest uppercase mb-2"> <span id="currentYear"></span> Amin Dananjaya — E-Portofolio PPG</p>
+        <p class="text-xs opacity-80 font-bold tracking-widest uppercase">Dirancang untuk kebutuhan pendidikan & profesional</p>
+    </footer>
+    <script>
+        document.getElementById('currentYear').innerText = new Date().getFullYear();
+        const APP_CONFIG = {
+            images: {
+                fotoProfil: "assets/img/profil.jpeg",
+                fotoDaerah: "assets/img/wonogiri.jpeg",
+                hobiHiking: "assets/img/hiking.jpeg",
+                hobiOlahraga: "assets/img/voli.jpeg",
+                hobiBola: "assets/img/bola.jpeg",
+                imgContact: "assets/3.jpg"
+            },
+            documents: {
+                'Modul Ajar': [
+                    { title: 'MODUL AJAR SIKLUS.pdf', file: 'assets/pdf/MODUL AJAR SIKLUS.pdf', desc: '<b class="uppercase tracking-widest text-accent text-[10px]">Analisis Siklus 2</b><br><br><b>Konteks:</b> Modul ajar ini disusun dan diterapkan pada peserta didik kelas X TE B SMP Negeri 21 Kota Semarang selama PPL Terbimbing untuk mengembangkan keterampilan lari estafet sekaligus menanamkan nilai kerja sama, disiplin, dan sportivitas dalam pembelajaran PJOK.<br><br><b>Tujuan:</b> Peserta didik diharapkan mampu memahami aturan dasar lari estafet, mempraktikkan teknik memegang, memberi, dan menerima tongkat dengan benar, serta bekerja sama secara efektif dalam tim.<br><br><b>Kelebihan:</b> Modul menggunakan model Game Based Learning yang membuat pembelajaran lebih aktif, menyenangkan, dan mendorong kolaborasi antarpeserta didik. Asesmen dirancang secara berkelanjutan melalui diagnostik, formatif, dan sumatif sehingga perkembangan belajar dapat dipantau secara menyeluruh.<br><br><b>Kekurangan:</b> Pemanfaatan media digital masih terbatas dan diferensiasi pembelajaran belum sepenuhnya mengakomodasi perbedaan kemampuan peserta didik dalam aktivitas praktik.<br><br><b>Analisis Teori:</b> Artefak ini menunjukkan penerapan teori konstruktivisme melalui diskusi dan praktik langsung, serta teori experiential learning yang menekankan pengalaman, refleksi, dan perbaikan berkelanjutan. Model Game Based Learning juga sejalan dengan pembelajaran berpusat pada peserta didik yang mampu meningkatkan motivasi, keterlibatan, dan pengalaman belajar yang bermakna.' },
+                ],
+                'Siklus': [
+                    { title: 'LK.4.PPL 1.pdf', file: 'assets/pdf/LK.4.PPL 1.pdf' },
+                    { title: 'LK.4.PPL 2.pdf', file: 'assets/pdf/LK.4.PPL 2.pdf' },
+                    { title: 'K.4.PPL 3.pdf', file: 'assets/pdf/LK.4.PPL 3.pdf' }
+                ],
+                'Penilaian': [
+                    { title: 'LK 7.pdf', file: 'assets/pdf/LK 7.pdf' },
+                    { title: 'LK 8.pdf', file: 'assets/pdf/LK 8.pdf' }
+                ],
+                'Media Pembelajaran': [
+                    { title: 'SIKLUS - SENAM LANTAI', file: 'assets/img/mediaajar.jpeg', type: 'image', desc: 'Media pembelajaran kebugaran jasmani' },
+                ],
+                'Dokumentasi': [
+                    { title: 'Dokumentasi 1', file: 'assets/img/dok1.jpeg', type: 'image' },
+                    { title: 'Dokumentasi 2', file: 'assets/img/dok2.jpeg', type: 'image' },
+                    { title: 'Dokumentasi 3', file: 'assets/img/dok3.jpeg', type: 'image' },
+                ]
+            }
+        };
+        const introScreen = document.getElementById('intro-screen');
+        let introClosed = false;
+        function closeIntro() {
+            if(introClosed) return;
+            introClosed = true;
+            introScreen.classList.add('hide');
+            setTimeout(() => { introScreen.style.display = 'none'; }, 800);
+        }
+        setTimeout(closeIntro, 5000);
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement;
+        themeToggleBtn.addEventListener('click', () => {
+            htmlElement.classList.toggle('dark');
+        });
+        let currentLang = 'id';
+        function toggleLanguage() {
+            currentLang = currentLang === 'id' ? 'en' : 'id';
+            document.getElementById('lang-text').innerText = currentLang.toUpperCase();
+            document.querySelectorAll('.lang-t').forEach(el => {
+                const targetText = el.getAttribute(`data-${currentLang}`);
+                if(targetText) el.innerHTML = targetText;
+            });
+        }
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById('badge-photo').src = APP_CONFIG.images.fotoProfil;
+            document.getElementById('img-daerah').src = APP_CONFIG.images.fotoDaerah;
+            document.getElementById('img-hiking').src = APP_CONFIG.images.hobiHiking;
+            document.getElementById('img-olahraga').src = APP_CONFIG.images.hobiOlahraga;
+            document.getElementById('img-bola').src = APP_CONFIG.images.hobiBola;
+            document.getElementById('img-contact').src = APP_CONFIG.images.imgContact;
+            if (typeof gsap === 'undefined' || typeof Draggable === 'undefined') return;
+            const badgeMaster = document.getElementById('badge-master');
+            const p1 = document.getElementById('strap-p1');
+            const p2 = document.getElementById('strap-p2');
+            const rL = document.getElementById('ring-left');
+            const rR = document.getElementById('ring-right');
+            gsap.set(badgeMaster, { y: 25 });
+            function updateLanyard(x, y) {
+                const centerX = 325;
+                const anchorLX = centerX - 130;
+                const anchorRX = centerX + 130;
+                const targetX = centerX + x;
+                const targetY = y + 330;
+                const d = `M ${anchorLX} 0 C ${anchorLX} ${targetY * 0.8}, ${targetX - 10} ${targetY * 0.85}, ${targetX} ${targetY} C ${targetX + 10} ${targetY * 0.85}, ${anchorRX} ${targetY * 0.8}, ${anchorRX} 0`;
+                p1.setAttribute('d', d);
+                p2.setAttribute('d', d);
+                rL.setAttribute('cx', anchorLX);
+                rL.setAttribute('cy', 0);
+                rR.setAttribute('cx', anchorRX);
+                rR.setAttribute('cy', 0);
+            }
+            let dragBounds = { minX: -200, maxX: 200, minY: -30, maxY: 120 };
+            function updateBounds() {
+                const width = window.innerWidth;
+                if (width < 480) { dragBounds = { minX: -80, maxX: 80, minY: -20, maxY: 70 }; }
+                else if (width < 768) { dragBounds = { minX: -120, maxX: 120, minY: -20, maxY: 90 }; }
+                else { dragBounds = { minX: -200, maxX: 200, minY: -30, maxY: 130 }; }
+                const dragInst = Draggable.get(badgeMaster);
+                if (dragInst) dragInst.applyBounds(dragBounds);
+            }
+            Draggable.create(badgeMaster, {
+                type: "x,y",
+                edgeResistance: 0.85,
+                bounds: dragBounds,
+                allowNativeTouchScrolling: true,
+                dragClickables: true,
+                onPress: function() {
+                    badgeMaster.classList.add("dragging");
+                    gsap.to(badgeMaster, { scale: 1.05, duration: 0.2 });
+                },
+                onDrag: function() {
+                    gsap.set(badgeMaster, {
+                        rotationY: this.x * 1.5,
+                        rotationX: -(this.y / 250) * 15,
+                        rotationZ: this.x * 0.05
+                    });
+                    updateLanyard(this.x, this.y);
+                },
+                onRelease: function() {
+                    badgeMaster.classList.remove("dragging");
+                    gsap.to(badgeMaster, {
+                        x: 0,
+                        y: 25,
+                        rotationX: 0,
+                        rotationY: 0,
+                        rotationZ: 0,
+                        scale: 1,
+                        ease: "elastic.out(1.2, 0.4)",
+                        duration: 2.5,
+                        onUpdate: function() {
+                            updateLanyard(gsap.getProperty(badgeMaster, "x"), gsap.getProperty(badgeMaster, "y"));
+                        }
+                    });
+                }
+            });
+            window.addEventListener('resize', function() {
+                updateLanyard(0, 25);
+                updateBounds();
+            });
+            updateLanyard(0, 25);
+            updateBounds();
+        });
+        function openHobi(e, hobiName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.hobi-btn').forEach(btn => {
+                btn.classList.remove('bg-gray-900', 'text-white', 'dark:bg-white', 'dark:text-black', 'font-bold', 'shadow-md');
+                btn.classList.add('font-semibold');
+            });
+            document.getElementById('hobi-' + hobiName).classList.add('active');
+            e.currentTarget.classList.remove('font-semibold');
+            e.currentTarget.classList.add('bg-gray-900', 'text-white', 'dark:bg-white', 'dark:text-black', 'font-bold', 'shadow-md');
+        }
+        const modal = document.getElementById('artefak-modal');
+        const fileListContainer = document.getElementById('modal-file-list');
+        const headerContainer = document.getElementById('modal-header-container');
+        let currentSlideIndex = 0;
+        window.changeSlide = function(step) {
+            const slides = document.querySelectorAll('.carousel-slide');
+            if (slides.length === 0) return;
+            slides[currentSlideIndex].classList.remove('opacity-100', 'z-10');
+            slides[currentSlideIndex].classList.add('opacity-0', 'z-0', 'pointer-events-none');
+            currentSlideIndex += step;
+            if (currentSlideIndex >= slides.length) currentSlideIndex = 0;
+            if (currentSlideIndex < 0) currentSlideIndex = slides.length - 1;
+            slides[currentSlideIndex].classList.remove('opacity-0', 'z-0', 'pointer-events-none');
+            slides[currentSlideIndex].classList.add('opacity-100', 'z-10');
+        };
+        function openArtefak(title, iconClass, iconColorClass) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-icon').className = `fa-solid ${iconClass} text-6xl md:text-7xl mb-6 filter drop-shadow-lg ${iconColorClass}`;
+            const subtitleMap = {
+                'Modul Ajar': 'Dokumen perencanaan pembelajaran dalam format PDF',
+                'Media Pembelajaran': 'Media visual pembelajaran',
+                'Siklus': 'Dokumentasi proses pembelajaran PPL tiap siklus',
+                'Penilaian': 'Rubrik dan instrumen penilaian DPL & GP',
+                'Dokumentasi': 'Arsip log kegiatan dan foto dokumentasi'
+            };
+            document.getElementById('modal-subtitle').innerText = subtitleMap[title] || 'Klik tombol Lihat untuk preview atau Unduh untuk menyimpan';
+            fileListContainer.innerHTML = '';
+            fileListContainer.className = 'w-full overflow-y-auto pr-2 custom-scrollbar flex-grow text-left pb-6';
+            const files = APP_CONFIG.documents[title] || [];
+            if (files.length === 0) {
+                headerContainer.style.display = 'flex';
+                fileListContainer.classList.add('grid', 'grid-cols-1');
+                fileListContainer.innerHTML = `<div class="py-20 text-center w-full bg-black/5 dark:bg-white/5 rounded-3xl border-2 border-dashed" style="border-color: var(--glass-border);"><p class="font-bold text-2xl mb-2 tracking-widest uppercase" style="color: var(--text-main);">Belum ada dokumen</p><p class="text-base font-medium" style="color: var(--text-muted);">Artefak untuk kategori ini sedang disiapkan.</p></div>`;
+            } else {
+                const isImage = files[0].type === 'image';
+                if (isImage) {
+                    headerContainer.style.display = 'none';
+                    fileListContainer.classList.remove('grid', 'grid-cols-1', 'md:grid-cols-2', 'lg:grid-cols-3', 'gap-8');
+                    fileListContainer.classList.add('flex', 'flex-col', 'justify-center', 'items-center', 'h-full', 'overflow-hidden');
+                    let sliderHtml = '<div class="relative w-full h-[70vh] flex items-center justify-center overflow-hidden">';
+                    files.forEach((file, index) => {
+                        sliderHtml += `<div class="carousel-slide absolute inset-0 w-full h-full transition-opacity duration-500 flex flex-col items-center justify-center ${index === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'}"><div class="w-full h-full flex justify-center items-center p-4"><img src="${file.file}" alt="${file.title}" class="max-w-full max-h-full object-contain drop-shadow-2xl rounded-lg"></div><div class="absolute bottom-4 right-4 flex gap-3 z-30"><a href="${file.file}" target="_blank" class="px-5 py-2.5 flex justify-center items-center bg-white/20 backdrop-blur-md rounded-xl hover:bg-accent hover:text-black transition transform hover:scale-110 text-white font-bold text-xs tracking-widest" title="Lihat Full">LIHAT</a><a href="${file.file}" download="${file.title}" class="px-5 py-2.5 flex justify-center items-center bg-white/20 backdrop-blur-md rounded-xl hover:bg-accent hover:text-black transition transform hover:scale-110 text-white font-bold text-xs tracking-widest" title="Unduh">UNDUH</a></div><div class="absolute top-4 left-4 bg-black/60 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1.5 rounded-md uppercase tracking-widest shadow-lg">${index + 1} / ${files.length} • MEDIA</div><div class="absolute bottom-0 w-full bg-gradient-to-t from-black/80 to-transparent p-6 pt-20 text-center z-20"><h4 class="font-bold text-2xl text-white drop-shadow-md tracking-widest uppercase mb-1">${file.title}</h4></div></div>`;
+                    });
+                    sliderHtml += '</div>';
+                    if (files.length > 1) {
+                        sliderHtml += `<div class="absolute top-1/2 -translate-y-1/2 w-full flex justify-between px-4 z-40 pointer-events-none"><button onclick="changeSlide(-1)" class="pointer-events-auto w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex justify-center items-center hover:bg-accent hover:text-black transition text-white shadow-xl text-xl font-bold"><i class="fa-solid fa-chevron-left"></i></button><button onclick="changeSlide(1)" class="pointer-events-auto w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex justify-center items-center hover:bg-accent hover:text-black transition text-white shadow-xl text-xl font-bold"><i class="fa-solid fa-chevron-right"></i></button></div>`;
+                    }
+                    fileListContainer.innerHTML = sliderHtml;
+                    currentSlideIndex = 0;
+                } else {
+                    headerContainer.style.display = 'flex';
+                    fileListContainer.classList.add('grid', 'grid-cols-1', 'md:grid-cols-2', 'lg:grid-cols-3', 'gap-8');
+                    files.forEach(file => {
+                        const fileDescHtml = file.desc ? `<div class="mt-4 text-xs text-left border-t border-gray-600 pt-4 max-h-40 overflow-y-auto custom-scrollbar font-medium leading-relaxed" style="color: var(--text-muted);">${file.desc}</div>` : `<span class="text-[10px] font-mono mt-2 font-bold uppercase tracking-widest px-3 py-1.5 bg-black/5 dark:bg-white/10 rounded-md w-fit inline-block" style="color: var(--text-muted);">PDF Document</span>`;
+                        const fileHtml = `<div class="p-6 rounded-3xl border flex flex-col justify-between items-start gap-6 hover:shadow-xl hover:-translate-y-2 transition-all duration-400 bg-white/80 dark:bg-white/5 h-full group" style="border-color: var(--glass-border);"><div class="flex items-start gap-5 w-full"><div class="w-16 h-16 rounded-2xl bg-red-50 dark:bg-red-500/10 flex justify-center items-center shrink-0 border border-red-100 dark:border-red-500/20 shadow-inner group-hover:scale-110 transition duration-300"><i class="fa-solid fa-file-pdf text-red-500 text-3xl"></i></div><div class="flex flex-col flex-grow pt-1"><span class="font-bold text-lg leading-tight line-clamp-2" style="color: var(--text-main);" title="${file.title}">${file.title}</span>${!file.desc ? fileDescHtml : ''}</div></div><div class="flex gap-3 w-full mt-auto pt-2"><a href="${file.file}" target="_blank" class="py-3 px-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition flex justify-center items-center gap-2 flex-1 shadow-md text-xs tracking-widest uppercase">LIHAT</a><a href="${file.file}" download="${file.title}" class="py-3 px-2 border font-bold rounded-xl hover:bg-gray-100 dark:hover:bg-white/10 transition flex justify-center items-center gap-2 flex-1 shadow-sm text-xs tracking-widest uppercase" style="color: var(--text-main); border-color: var(--glass-border); background: var(--glass-bg);">UNDUH</a></div>${file.desc ? fileDescHtml : ''}</div>`;
+                        fileListContainer.insertAdjacentHTML('beforeend', fileHtml);
+                    });
+                }
+            }
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeArtefak() {
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+        document.addEventListener("DOMContentLoaded", () => {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        const progressBars = entry.target.querySelectorAll('.progress-bar-fill');
+                        progressBars.forEach(bar => {
+                            bar.style.width = bar.getAttribute('data-width');
+                        });
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+            document.querySelectorAll('.reveal').forEach((el) => {
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>
